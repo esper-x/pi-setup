@@ -1,12 +1,14 @@
 {
   "theme": "dark",
   "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.6-luna",
+  "defaultModel": "gpt-5.6-sol",
   "defaultThinkingLevel": "high",
   "packages": [
     "npm:pi-mcp-adapter",
     "npm:pi-subagents",
-    "npm:pi-interactive-shell"
+    "npm:pi-interactive-shell",
+    "git:github.com/DietrichGebert/ponytail",
+    "git:github.com/esper-x/pi-atelier"
   ],
   "subagents": {
     "agentOverrides": {
