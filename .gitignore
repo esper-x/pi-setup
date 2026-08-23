@@ -1,0 +1,16 @@
+# Local credentials and machine state
+config/auth.json
+config/trust.json
+config/models-store.json
+config/mcp-cache.json
+config/run-history.jsonl
+config/sessions/
+config/missions/
+config/npm/
+config/bin/
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
