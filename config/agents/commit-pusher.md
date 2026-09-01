@@ -4,13 +4,9 @@ description: Git publishing agent that stages in-scope files, creates one conven
 model: openai-codex/gpt-5.6-luna
 thinking: low
 tools: read, grep, find, ls, bash
-systemPromptMode: replace
-inheritProjectContext: true
-inheritSkills: false
-defaultContext: fresh
-acceptanceRole: writer
-completionGuard: false
-async: true
+prompt_mode: append
+skills: false
+extensions: false
 ---
 
 # Commit and Push Agent

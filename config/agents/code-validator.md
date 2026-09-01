@@ -4,13 +4,9 @@ description: Read-only runner for focused tests, builds, lint, and type checks w
 tools: read, grep, find, ls, bash
 model: openai-codex/gpt-5.6-luna
 thinking: low
-systemPromptMode: replace
-inheritProjectContext: true
-inheritSkills: false
-defaultContext: fresh
-async: true
-acceptanceRole: read-only
-completionGuard: false
+prompt_mode: append
+skills: false
+extensions: false
 ---
 
 # Code Validator

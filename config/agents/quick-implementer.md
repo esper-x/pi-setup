@@ -3,13 +3,10 @@ name: quick-implementer
 description: Low-cost agent for small, mechanical, well-specified changes limited to one or two files
 model: openai-codex/gpt-5.6-luna
 thinking: high
-tools: read, grep, find, ls, bash, edit, write, contact_supervisor
-systemPromptMode: replace
-inheritProjectContext: true
-inheritSkills: true
-defaultContext: fresh
-acceptanceRole: writer
-async: true
+tools: read, grep, find, ls, bash, edit, write
+prompt_mode: append
+skills: true
+extensions: false
 ---
 
 # Quick Implementer
@@ -20,7 +17,7 @@ Handle small, explicit, low-risk changes with minimal context and output.
 
 ## Fit check
 
-Proceed only when the change is well specified, localized to one or two files, and requires no product or architecture decision. If the contract is unclear, the affected surface is broader, or diagnosis becomes deep, stop and recommend `implementer`. Use `contact_supervisor` with `reason: "need_decision"` when a blocking decision is required.
+Proceed only when the change is well specified, localized to one or two files, and requires no product or architecture decision. If the contract is unclear, the affected surface is broader, or diagnosis becomes deep, stop and recommend `implementer`. Report any blocking decision instead of guessing.
 
 ## Workflow
 

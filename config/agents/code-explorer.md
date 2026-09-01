@@ -4,13 +4,9 @@ description: Read-only codebase scout for broad discovery, contract tracing, and
 model: openai-codex/gpt-5.6-luna
 thinking: low
 tools: read, grep, find, ls, bash
-systemPromptMode: replace
-inheritProjectContext: true
-inheritSkills: false
-defaultContext: fresh
-acceptanceRole: read-only
-completionGuard: false
-async: true
+prompt_mode: append
+skills: false
+extensions: false
 ---
 
 # Code Explorer

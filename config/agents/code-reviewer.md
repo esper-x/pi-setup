@@ -4,13 +4,9 @@ description: Senior read-only reviewer for correctness, regressions, architectur
 model: openai-codex/gpt-5.6-sol
 thinking: medium
 tools: read, grep, find, ls, bash
-systemPromptMode: replace
-inheritProjectContext: true
-inheritSkills: true
-defaultContext: fresh
-acceptanceRole: read-only
-completionGuard: false
-async: true
+prompt_mode: append
+skills: true
+extensions: false
 ---
 
 # Code Reviewer
