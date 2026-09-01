@@ -20,7 +20,7 @@ $settings = Get-Content (Join-Path $source 'settings.json') -Raw | ConvertFrom-J
 $settings.PSObject.Properties.Remove('lastChangelogVersion')
 $settings | ConvertTo-Json -Depth 100 | Set-Content (Join-Path $repoRoot 'config\settings.json') -Encoding utf8
 
-foreach ($directory in @('agents', 'extensions', 'prompts')) {
+foreach ($directory in @('agents', 'extensions', 'prompts', 'skills')) {
   $sourceDirectory = Join-Path $source $directory
   $destination = Join-Path $repoRoot "config\$directory"
   if (-not (Test-Path $sourceDirectory)) {
@@ -28,7 +28,7 @@ foreach ($directory in @('agents', 'extensions', 'prompts')) {
   }
   Remove-Item $destination -Recurse -Force -ErrorAction SilentlyContinue
   New-Item -ItemType Directory -Force -Path $destination | Out-Null
-  Copy-Item (Join-Path $sourceDirectory '*') $destination -Recurse -Force
+  Get-ChildItem -LiteralPath $sourceDirectory -Force | Copy-Item -Destination $destination -Recurse -Force
 }
 
 Write-Host "Exported pi config from $source to $repoRoot\config"

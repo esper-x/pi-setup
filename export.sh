@@ -22,14 +22,14 @@ delete settings.lastChangelogVersion
 fs.writeFileSync(destination, `${JSON.stringify(settings, null, 2)}\n`)
 NODE
 
-for directory in agents extensions prompts; do
+for directory in agents extensions prompts skills; do
   if [ ! -d "$source_dir/$directory" ]; then
     printf 'Missing source directory: %s\n' "$source_dir/$directory" >&2
     exit 1
   fi
   rm -rf "$repo_root/config/$directory"
   mkdir -p "$repo_root/config/$directory"
-  cp -R "$source_dir/$directory"/. "$repo_root/config/$directory/"
+  cp -RL "$source_dir/$directory"/. "$repo_root/config/$directory/"
 done
 
 printf 'Exported pi config from %s to %s/config\n' "$source_dir" "$repo_root"

@@ -15,11 +15,11 @@ Copy-Item (Join-Path $repoRoot 'config\AGENTS.md') (Join-Path $target 'AGENTS.md
 Copy-Item (Join-Path $repoRoot 'config\mcp.json') (Join-Path $target 'mcp.json') -Force
 Copy-Item (Join-Path $repoRoot 'config\settings.json') (Join-Path $target 'settings.json') -Force
 
-foreach ($directory in @('agents', 'extensions', 'prompts')) {
+foreach ($directory in @('agents', 'extensions', 'prompts', 'skills')) {
   $source = Join-Path $repoRoot "config\$directory"
   $destination = Join-Path $target $directory
   New-Item -ItemType Directory -Force -Path $destination | Out-Null
-  Copy-Item (Join-Path $source '*') $destination -Recurse -Force
+  Get-ChildItem -LiteralPath $source -Force | Copy-Item -Destination $destination -Recurse -Force
 }
 
 if ($InstallPackages) {
