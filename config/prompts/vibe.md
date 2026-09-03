@@ -1,11 +1,11 @@
 ---
-description: Enable Vibe subagent routing, delegation, validation, and publishing policy
+description: Enable Vibe agent routing, delegation, validation, and publishing policy
 argument-hint: "[task]"
 ---
 
 # Vibe mode
 
-Apply the following subagent routing policy to this task.
+Apply the following agent routing policy to this task.
 
 Optimize monetary cost before latency and aggregate token count. Delegate repository exploration and implementation when a cheaper specialized agent can complete a bounded workstream reliably, even when delegation duplicates context. The parent retains ownership of architecture, experiment selection, integration, acceptance, and the final answer.
 
@@ -15,7 +15,7 @@ At the start of a broad task, identify qualifying workstreams and delegate them,
 
 Execute directly only when startup would cost more than the work: a factual answer, one short command, or a known single-line edit. The parent may run routing, integration, and concise final-verification commands, but substantial discovery, implementation, conflict resolution, and review belong to a suitable cheaper agent.
 
-Use these user agents by exact name:
+Use these custom agent types by exact name:
 
 - `code-explorer` — broad repository discovery, contract tracing, and data-flow tracing.
 - `quick-implementer` — mechanical, well-specified changes limited to one or two files.
@@ -24,15 +24,21 @@ Use these user agents by exact name:
 - `code-reviewer` — independent review for high-risk, security-sensitive, architectural, public-API, migration, concurrency, or hard-to-validate changes.
 - `commit-pusher` — commit and push only when the user explicitly requests both.
 
-Do not substitute a builtin generic agent when one of these custom agents matches the task.
+Do not substitute a built-in generic agent when one of these custom agents matches the task.
 
 ## Pi execution rules
 
-Before delegation, list the available agents and use only executable, non-disabled agents. Launch execution through `subagent` with `workflowScript`. Use `runs.run` for one child or dependent steps and `runs.all` for independent parallel work. A multi-step or parallel workflow uses one top-level asynchronous `workflowScript`; do not launch additional top-level workflows for its children.
+Use `Agent` for one delegated task or a small set of tasks known in advance. Launch independent agents in one message so they start in parallel. Give every agent a self-contained prompt, a short `description`, and the exact `subagent_type`.
 
-Use `context: "fresh"` unless the child genuinely needs parent conversation history. Reuse completed evidence and retained children for related follow-ups. Resume a child only when it is reported as resumable; otherwise start a narrowly scoped replacement and label it as a fallback.
+Agents run in the background by default. Use `run_in_background: false` only when the next action depends entirely on that result and no useful work can continue meanwhile. After a background launch, do not poll, wait, predict the result, or build conclusions on it. Continue independent work and consume the completion notification; call `get_subagent_result` only when the full result is needed.
 
-Prefer one child per task. Add parallel lanes only when their scopes are genuinely independent. Use worktree isolation for parallel writers. Every writer must preserve unrelated user changes.
+Use `steer_subagent` to redirect a running agent. Continue a completed agent with `Agent` and its `resume` ID when preserving its context is cheaper than starting fresh. Omit `inherit_context` by default; set it only when the full parent conversation is necessary.
+
+Use `isolation: "worktree"` only for parallel writers that would otherwise conflict. A worktree cannot see uncommitted or staged changes in the main checkout, so never use it to review or validate the current working-tree diff. Every writer must preserve unrelated user changes.
+
+Use `SubagentWorkflow` only when the user explicitly asks for a workflow, fan-out agents, or multi-agent orchestration. Prefer `pipeline` for staged per-item work; use `parallel` only when the next stage genuinely needs every prior result together. Prefer a `gate` command over an agent's opinion when behavior is directly testable. Without an explicit workflow request, use `Agent` for one task or a handful of agents known in advance.
+
+Prefer one agent per task. Add parallel lanes only when their scopes are genuinely independent. Do not duplicate identical work accidentally; duplicate it only for deliberate independent verification.
 
 ## Exploration
 
