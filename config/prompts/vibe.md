@@ -15,7 +15,7 @@ At the start of a broad task, identify qualifying workstreams and delegate them,
 
 Execute directly only when startup would cost more than the work: a factual answer, one short command, or a known single-line edit. The parent may run routing, integration, and concise final-verification commands, but substantial discovery, implementation, conflict resolution, and review belong to a suitable cheaper agent.
 
-Use these user agents by exact name:
+Use these custom agents by exact name:
 
 - `code-explorer` — broad repository discovery, contract tracing, and data-flow tracing.
 - `quick-implementer` — mechanical, well-specified changes limited to one or two files.
@@ -24,15 +24,19 @@ Use these user agents by exact name:
 - `code-reviewer` — independent review for high-risk, security-sensitive, architectural, public-API, migration, concurrency, or hard-to-validate changes.
 - `commit-pusher` — commit and push only when the user explicitly requests both.
 
-Do not substitute a builtin generic agent when one of these custom agents matches the task.
+Do not substitute a builtin generic agent when one of these custom agents matches the task. Use only agent types currently advertised by the `Agent` tool; do not rely on its fallback for an unavailable or disabled custom agent.
 
 ## Pi execution rules
 
-Before delegation, list the available agents and use only executable, non-disabled agents. Launch execution through `subagent` with `workflowScript`. Use `runs.run` for one child or dependent steps and `runs.all` for independent parallel work. A multi-step or parallel workflow uses one top-level asynchronous `workflowScript`; do not launch additional top-level workflows for its children.
+Use the `Agent` tool for single-agent delegation. Every call must provide a self-contained `prompt`, a 3–5 word `description`, and the matching `subagent_type`. Omit `run_in_background` or set it to `true` by default; the plugin backgrounds agents and sends a completion notification with a preview.
 
-Use `context: "fresh"` unless the child genuinely needs parent conversation history. Reuse completed evidence and retained children for related follow-ups. Resume a child only when it is reported as resumable; otherwise start a narrowly scoped replacement and label it as a fallback.
+For several independent workstreams known up front, send multiple `Agent` calls in one message so they run concurrently. Use `get_subagent_result` for the full output of a background agent (`wait: true` only when the current turn genuinely depends on it); never poll or sleep. Use `run_in_background: false` only when the very next action requires the result. Steer a running child with `steer_subagent`; resume a finished child with `Agent(..., resume: "<agent-id>")`. If resume is unavailable, start a clearly labelled, self-contained same-role fallback.
 
-Prefer one child per task. Add parallel lanes only when their scopes are genuinely independent. Use worktree isolation for parallel writers. Every writer must preserve unrelated user changes.
+Agents start with fresh task context by default. Set `inherit_context: true` only when the child genuinely needs the parent conversation.
+
+Use `SubagentWorkflow` only when the number of agents depends on runtime discovery or work must pass through deterministic stages; `/vibe` permits that limited use. Pass a single `script` beginning with a pure-literal `export const meta = { ... }`. Inside it, select custom roles with `agentType`, prefer `pipeline` for multi-stage work, and use `parallel` only when a real barrier is required.
+
+Keep writes single-threaded by default. Use `isolation: "worktree"` only for intentionally parallel writers; each worktree starts from committed `HEAD` and cannot see staged or uncommitted changes, and completed changes remain on a branch that must be merged separately. Otherwise omit isolation (or pass `"off"`), keep one writer in the active checkout, and do not edit that checkout concurrently with it. Every writer must preserve unrelated user changes.
 
 ## Exploration
 
@@ -44,11 +48,11 @@ For broad exploration, run at most two explorers by default. Give each a distinc
 
 Use `quick-implementer` for a localized, low-risk change with an obvious narrow check. Use `implementer` for broader behavior changes and tests.
 
-Detach behavioral verification from `implementer` by default. The implementer runs cheap structural checks and returns a complete affected-test manifest: every added or changed test plus directly affected existing tests. Then delegate focused verification to `code-validator`.
+Detach behavioral verification from `implementer` by default. The implementer runs cheap structural checks and returns a complete affected-test manifest: every added or changed test plus directly affected existing tests. Then delegate focused verification to `code-validator` with the exact manifest and command. The implementer must not claim green behavioral tests without validator evidence.
 
-Every validator task must state the exact command, assigned manifest entries, validation boundary, and concurrency plan. Run every manifest entry with focused file, class, package, or equivalent selectors instead of replacing it with a whole-suite command. Prefer one validator using up to three runner workers when safe. Otherwise partition the manifest across at most three validators with non-overlapping shards. Do not parallelize commands that share mutable databases, fixtures, snapshots, generated files, ports, caches, or coverage output unless those resources are isolated.
+Every validator task must state the exact command, assigned manifest entries, validation boundary, and concurrency plan. Run every manifest entry with focused file, class, package, or equivalent selectors instead of replacing it with a whole-suite command. Prefer one validator using up to three runner workers when safe. Otherwise partition the manifest across at most three validators with non-overlapping shards. Do not parallelize commands that share mutable databases, fixtures, snapshots, generated files, ports, caches, or coverage output.
 
-When all affected unit-test entries pass, do not rerun the global unit-test suite by default. Treat integration and end-to-end checks as separate scopes. The parent classifies failures before repair. Consolidate likely implementation failures, resume the original `implementer` with the evidence, and return the affected checks to a validator. Escalate after two unsuccessful repair cycles or when failures are flaky, environmental, or contract-level.
+When all affected unit-test entries pass, do not rerun the global unit-test suite by default. Treat integration and end-to-end checks as separate scopes. The parent classifies failures before repair, resumes the original `implementer` with concrete evidence, and returns the affected checks to `code-validator`. Escalate after two unsuccessful repair cycles or when failures are flaky, environmental, or contract-level.
 
 ## Review and publishing
 
